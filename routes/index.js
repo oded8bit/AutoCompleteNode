@@ -41,7 +41,7 @@ function loadData() {
  * @param {string} query the query string
  * @returns JSON
  */
-function getAutocomplete(query) {
+function getAutocomplete(query, startswith) {
   if (!dataLoaded)
     loadData();
 
@@ -52,9 +52,14 @@ function getAutocomplete(query) {
     return JSON.stringify({});
 
   // Perform the actual search
-  // This line can be replaced with a DB query or other, depending on where
-  // the data is stored
-  var options = db.filter(item => item.name.toLowerCase().indexOf(query)>-1);
+  // These lines can be replaced with a DB query or other, depending on where
+  // the data is stored  
+  var options;  
+  if (startswith == undefined || startswith == 'no' || startswith != 'yes')
+    options = db.filter(item => item.name.toLowerCase().indexOf(query)>-1);
+  else
+    options = db.filter(item => item.name.toLowerCase().startswith(query)>-1);
+
   // No results
   if (options.length == 0)
     return JSON.stringify({});
@@ -69,12 +74,12 @@ function getAutocomplete(query) {
 
 /**
  * Handles the API call,
- * REST:   /ac?ac=query_string
+ * REST:   /ac?ac=query_string&sw=yes
  */
 router.get('/ac', function(req, res, next) {
   res.setHeader("Access-Control-Allow-Origin", "*");
   var q = url.parse(req.url, true).query;
-  var suggestions = getAutocomplete(q.ac);
+  var suggestions = getAutocomplete(q.ac, q.sw);
   res.json(
    suggestions
   );
