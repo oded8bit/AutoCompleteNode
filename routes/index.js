@@ -58,7 +58,7 @@ function getAutocomplete(query, startswith) {
   if (startswith == undefined || startswith == 'no' || startswith != 'yes')
     options = db.filter(item => item.name.toLowerCase().indexOf(query)>-1);
   else
-    options = db.filter(item => item.name.toLowerCase().startswith(query)>-1);
+    options = db.filter(item => item.name.toLowerCase().indexOf(query)==0);
 
   // No results
   if (options.length == 0)
